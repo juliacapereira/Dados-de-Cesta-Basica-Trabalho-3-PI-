@@ -1,0 +1,8 @@
+﻿Mes_Ano_Data;Data_Coleta;Estab;Produto;Marca;Preco;Quantidade;PPK;Produto_Padronizado
+2024-10-01;2024-10-07;SUP_32;Banana Nanica;;999.0;1.0;999.0;Banana Nanica
+2025-10-01;2025-10-17;SUP_47;Pão Francês;;0.1;1.0;0.1;Pão Francês
+2025-10-01;2025-10-17;SUP_36;Pão Francês;;0.1;1.0;0.1;Pão Francês
+2025-11-01;;SUP_17;Carne Bovina Coxão Mole;;0.1;1.0;0.1;Carne Bovina Coxão Mole
+2025-11-01;;SUP_17;Frango Sobrecoxa;;0.1;1.0;0.1;Frango Sobrecoxa
+2025-12-01;;SUP_17;Frango Sobrecoxa;;0.1;1.0;0.1;Frango Sobrecoxa
+2026-05-01;;SUP_13;Pernil;;1.0;1.0;1.0;Pernil
