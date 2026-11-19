@@ -1,0 +1,13 @@
+﻿Causa(B);Efeito(A);Melhor_lag;p_valor;Sig_5%
+Feijão;Açúcar;1;0.07443330148704948;False
+Óleo;Açúcar;1;0.11025191202797545;False
+Arroz;Açúcar;2;0.11088291664301367;False
+Óleo;Arroz;3;0.11560852258180382;False
+Açúcar;Feijão;1;0.15070477263796436;False
+Feijão;Óleo;1;0.21898960664273323;False
+Açúcar;Arroz;1;0.2856632454021445;False
+Arroz;Óleo;3;0.36577835554548255;False
+Óleo;Feijão;3;0.3707718520156783;False
+Arroz;Feijão;2;0.4480761244274512;False
+Feijão;Arroz;3;0.6060584062988479;False
+Açúcar;Óleo;3;0.8521591149921105;False
