@@ -22,12 +22,19 @@ sinal de alerta para outro. Esse conhecimento tem aplicação direta no
 acompanhamento de preços de alimentos na região de Campinas.
 
 **Motivação vinda da exploração (passos 1 e 2):**
-- A base tem [N] meses, de [mês/ano] a [mês/ano], coletados em [N] mercados.
-- O teste ADF indicou que as séries [não são estacionárias em nível / ...] e
-  que [ficam estacionárias após uma diferenciação].
-- A análise de sazonalidade mostrou [padrão observado ou ausência dele].
-- A correlação entre variações mensais dos produtos foi [fraca/moderada/forte],
-  o que justifica testar se um produto ajuda a prever outro.
+- A base tem 48 meses, de setembro/2022 a agosto/2026, coletados em 51
+  supermercados (44.514 registros após a limpeza). As quatro séries mensais
+  estão completas, sem meses faltantes.
+- O teste ADF indicou que as quatro séries não são estacionárias em nível
+  (p entre 0,24 e 0,64) e que ficam estacionárias após uma diferenciação para
+  feijão, açúcar e óleo (p < 0,01). No arroz, a evidência após diferenciar é
+  mais fraca (p = 0,14).
+- A análise de sazonalidade mostrou diferenças entre os meses (maior amplitude
+  no óleo), mas sem evidência suficiente de sazonalidade estável, pois a base
+  cobre só quatro ciclos anuais.
+- A correlação entre variações mensais dos produtos foi fraca (entre -0,13 e
+  +0,11). Isso não descarta relações defasadas, o que justifica testar se um
+  produto ajuda a prever outro (Granger e modelos com variáveis cruzadas).
 
 ## Método
 **Dados:** mediana mensal do preço padronizado (PPK) por produto, usando a
@@ -56,14 +63,50 @@ base tratada no passo 1. A mediana reduz o efeito de preços extremos.
   e prevê o mês t+1, repetindo ao longo da série.
 - Métricas: MAE, RMSE e MAPE.
 - Comparação de cada modelo com o ingênuo pelo ganho percentual de RMSE.
+- Teste de Diebold-Mariano (perda quadrática, correção de Harvey-Leybourne-
+  Newbold) de cada modelo contra o ingênuo, para verificar se as diferenças de
+  erro são estatisticamente significativas (`05_teste_dm.py`).
 - A questão é considerada respondida se for possível dizer, com base nas
   métricas e por produto, qual modelo erra menos e se ele supera o baseline.
 
-## Conclusão esperada (preencher após o passo 5)
-- Algum modelo supera o ingênuo de forma consistente? Para quais produtos?
-- Os modelos com informação de outros produtos ajudam ou não?
-- Existe precedência entre produtos (Granger)?
-- Limitações: [tamanho da série, mediana entre mercados, mudanças de marca,
-  meses sem coleta, etc.]
-- Observação: um resultado do tipo "nenhum modelo supera o baseline" também é
-  uma resposta válida, desde que seja bem discutido.
+## Conclusão
+Resultados do walk-forward (23 previsões de 1 mês por produto, de out/2024 a
+ago/2026; treino inicial de 25 meses):
+
+- **Melhor modelo por produto.** O ingênuo teve o menor MAE nos quatro
+  produtos e o menor RMSE em arroz, feijão e açúcar. Só no óleo outro modelo
+  teve RMSE menor: ARIMA (0,331 contra 0,363 do ingênuo, ganho de 8,95%), com
+  RF próprio logo atrás (ganho de 5,07%). No açúcar o ARIMA empata com o
+  ingênuo, porque suas previsões são iguais às dele.
+- **Significância.** Pelo teste de Diebold-Mariano, nenhum modelo é
+  significativamente melhor que o ingênuo em nenhum produto. Mesmo o ganho do
+  ARIMA no óleo não é significativo (p = 0,29). As 4 comparações significativas
+  a 5% (SARIMA em arroz e açúcar; média móvel em feijão e óleo) indicam
+  modelos significativamente **piores** que o ingênuo. Essas contas não têm
+  correção para comparações múltiplas.
+- **Informação de outros produtos.** Não ajuda de forma consistente. O RF
+  cruzado reduziu o RMSE em relação ao RF próprio no feijão (0,375 contra
+  0,424), mas piorou ou empatou no arroz, no açúcar e no óleo, e em nenhum
+  caso superou o ingênuo no RMSE, exceto no óleo, sem significância.
+- **Precedência entre produtos.** O teste de Granger não encontrou
+  precedência a 5% em nenhuma das 12 direções. O menor p-valor foi 0,074
+  (feijão para açúcar, defasagem de 1 mês).
+- **Resposta à questão.** Com este histórico, os preços mensais medianos se
+  comportam quase como um passeio aleatório: repetir o último preço é uma
+  referência difícil de superar, e o objetivo de medir a capacidade preditiva
+  foi atingido, ainda que com resultado negativo para os modelos mais
+  elaborados.
+- **Limitações.** Série curta (48 meses, 23 previsões de teste, o que dá baixo
+  poder aos testes); uso da mediana entre mercados, que muda com a composição
+  mensal de supermercados e marcas; registros sem data exata e sem marca;
+  unidade de referência do PPK ainda a confirmar na documentação da base;
+  exclusão de 7 preços suspeitos por critério fixo, sem análise de
+  sensibilidade; hiperparâmetros do Gradient Boosting fixados sem busca; ordem
+  do ARIMA e parâmetros do RF escolhidos só na janela inicial; apenas horizonte
+  de 1 mês; sem comparação com preço do produtor nem análise por mercado.
+- **Próximos passos possíveis.** Horizontes de 2 a 4 meses, previsão por
+  supermercado, comparação com os custos de produção da Conab e modelos
+  multivariados (VAR).
+
+Observação: um resultado do tipo "nenhum modelo supera o baseline" é uma
+resposta válida, e é o que os dados mostram aqui.

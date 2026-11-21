@@ -20,6 +20,7 @@ CAMINHO_DADOS = PASTA / "dados" / "dados_tratados.csv"
 CAMINHO_METRICAS = PASTA / "resultados" / "metricas_modelos.csv"
 CAMINHO_PREVISOES = PASTA / "resultados" / "previsoes_walkforward.csv"
 CAMINHO_GRANGER = PASTA / "resultados" / "granger_produtos.csv"
+CAMINHO_DM = PASTA / "resultados" / "teste_diebold_mariano.csv"
 
 
 # ----------------------------------------------------------------------
@@ -35,10 +36,11 @@ def carregar_dados():
         CAMINHO_PREVISOES, sep=";", encoding="utf-8-sig", parse_dates=["Mes_Alvo"]
     )
     granger = pd.read_csv(CAMINHO_GRANGER, sep=";", encoding="utf-8-sig")
-    return df, metricas, previsoes, granger
+    dm = pd.read_csv(CAMINHO_DM, sep=";", encoding="utf-8-sig")
+    return df, metricas, previsoes, granger, dm
 
 
-df, metricas, previsoes, granger = carregar_dados()
+df, metricas, previsoes, granger, dm = carregar_dados()
 
 # ----------------------------------------------------------------------
 # BARRA LATERAL (FILTROS)
@@ -258,6 +260,40 @@ with aba3:
         use_container_width=True,
         hide_index=True,
     )
+
+    st.subheader(f"Teste de Diebold-Mariano vs. Ingênuo — {produto_sel}")
+    st.markdown(
+        "Compara o erro quadrático de cada modelo com o do ingênuo. "
+        "**DM negativo**: o modelo erra menos. **DM positivo**: o modelo erra mais. "
+        "A diferença só é significativa se o p-valor for menor que 0,05."
+    )
+
+    dm_prod = dm[dm["Produto"] == produto_sel][
+        ["Modelo", "DM", "p_valor", "Sig_5%"]
+    ].copy()
+
+    def _leitura(linha):
+        if pd.isna(linha["p_valor"]):
+            return "Não calculável (previsões idênticas às do ingênuo)"
+        if not linha["Sig_5%"]:
+            return "Sem diferença significativa"
+        return "Significativamente melhor" if linha["DM"] < 0 else "Significativamente pior"
+
+    dm_prod["Leitura"] = dm_prod.apply(_leitura, axis=1)
+
+    st.dataframe(
+        dm_prod.drop(columns="Sig_5%").style.format(
+            {"DM": "{:+.3f}", "p_valor": "{:.4f}"}, na_rep="—"
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    if dm_prod[(dm_prod["Sig_5%"]) & (dm_prod["DM"] < 0)].empty:
+        st.info(
+            "Nenhum modelo foi significativamente melhor que o ingênuo para este "
+            "produto (23 previsões de teste, sem correção para comparações múltiplas)."
+        )
 
 # ==================== ABA 4: GRANGER ====================
 with aba4:

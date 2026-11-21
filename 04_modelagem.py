@@ -295,7 +295,7 @@ def main():
     origem_inicial = max(24, int(0.5 * n))
     if n - origem_inicial - H < 10:
         print("\nATENÇÃO: poucos meses para avaliar. Reduza H ou a janela inicial.")
-    print(f"\nTreino inicial: {origem_inicial} meses | "
+    print(f"\nTreino inicial: {origem_inicial + 1} meses | "
           f"previsões avaliadas por produto: {n - origem_inicial - H}")
 
     print("\n=== WALK-FORWARD ===")

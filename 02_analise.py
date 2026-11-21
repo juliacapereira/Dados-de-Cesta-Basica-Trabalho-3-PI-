@@ -64,7 +64,7 @@ plt.savefig(
     dpi=300
 )
 
-plt.show()
+plt.close()
 
 # 7. Comparar a evolução de diferentes produtos
 
@@ -116,7 +116,7 @@ plt.savefig(
     dpi=300
 )
 
-plt.show()
+plt.close()
 
 # =========================================================
 # 8. CORRELAÇÃO ENTRE VARIAÇÕES MENSAIS DOS PRODUTOS
@@ -183,7 +183,7 @@ plt.savefig(
     dpi=300
 )
 
-plt.show()
+plt.close()
 
 # =========================================================
 # 9. TESTE DE ESTACIONARIEDADE (ADF)
@@ -348,7 +348,7 @@ plt.savefig(
     dpi=300
 )
 
-plt.show()
+plt.close()
 
 
 # =========================================================
@@ -412,4 +412,4 @@ plt.savefig(
     dpi=300
 )
 
-plt.show()
+plt.close()
